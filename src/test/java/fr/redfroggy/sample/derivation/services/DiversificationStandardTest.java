@@ -24,7 +24,7 @@ public class DiversificationStandardTest {
      * NXP AN10922 / §2.2.1 : AES-128 key diversification example
      */
     @Test
-    public void AN10922_Nominal() throws Exception {
+    public void AN10922_AES128_Nominal() throws Exception {
 
         byte[] key = BytesUtils.hexToBytes("00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF");
         byte[] uid = BytesUtils.hexToBytes("04:78:2E:21:80:1D:80");
@@ -39,12 +39,30 @@ public class DiversificationStandardTest {
         Assert.assertArrayEquals(BytesUtils.hexToBytes("A8:DD:63:A3:B8:9D:54:B3:7C:A8:02:47:3F:DA:91:75"), divKey);
     }
 
+    /**
+     * NXP AN10922 / §2.3.1 : AES-192 key diversification example
+     */
+    @Test
+    public void AN10922_AES192_Nominal() throws Exception {
+
+        byte[] key = BytesUtils.hexToBytes("00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF:01:02:03:04:05:06:07:08");
+        byte[] uid = BytesUtils.hexToBytes("04:78:2E:21:80:1D:80");
+        byte[] aid = BytesUtils.hexToBytes("F5:42:30");
+        byte[] seed = BytesUtils.hexToBytes("4E:58:50:20:41:62:75");
+        // Not necessary in AN10922
+        int keyIndex = 0;
+
+        DiversificationStandard div = new DiversificationStandard(AbstractDiversification.Standard.AN10922_AES192);
+        byte[] divKey = div.diversify(key, keyIndex, uid, aid, seed);
+
+        Assert.assertArrayEquals(BytesUtils.hexToBytes("CE39C8E1CD82D9A7BEDBE9D74AF59B23176755EE7586E12C"), divKey);
+    }
 
     /**
      * NXP AN10922 / §2.2.1 : AES-128 key diversification example
      */
     @Test
-    public void AN10922_DiversificationByKeyIDAnd20Padding() throws Exception {
+    public void AN10922_AES128_DiversificationByKeyIDAnd20Padding() throws Exception {
 
         byte[] key = BytesUtils.hexToBytes("00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF");
         byte[] uid = BytesUtils.hexToBytes("11:22:33:44:55:66:77");
@@ -63,7 +81,7 @@ public class DiversificationStandardTest {
      * NXP AN10922 / §2.2.1 : AES-128 key diversification example
      */
     @Test(expected = DiversificationException.class)
-    public void AN10922_BadKeyLength() throws Exception {
+    public void AN10922_AES128_BadKeyLength() throws Exception {
 
         byte[] key = BytesUtils.hexToBytes("FF");
         byte[] uid = BytesUtils.hexToBytes("04:78:2E:21:80:1D:80");

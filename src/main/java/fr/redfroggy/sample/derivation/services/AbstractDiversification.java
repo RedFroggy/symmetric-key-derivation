@@ -18,6 +18,7 @@ public abstract class AbstractDiversification {
      */
     public enum Standard {
         AN10922_AES128(Algorithm.AES),
+        AN10922_AES192(Algorithm.AES),
         AN0148_DES(Algorithm.DES),
         AN0148_3DES(Algorithm.TDES),
         AN0148_AES(Algorithm.AES);

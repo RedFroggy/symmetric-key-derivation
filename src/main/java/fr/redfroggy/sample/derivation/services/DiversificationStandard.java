@@ -19,6 +19,21 @@ import java.util.Arrays;
 public class DiversificationStandard extends AbstractDiversification {
 
     /**
+     * AN10922 AES 128 Bits constant
+     */
+    protected static final byte AES128_DIV_CONSTANT = (byte) 0x01;
+
+    /**
+     * AN10922 AES 192 Bits constant #1
+     */
+    protected static final byte AES192_DIV_CONSTANT1 = (byte) 0x11;
+
+    /**
+     * AN10922 AES 192 Bits constant #2
+     */
+    protected static final byte AES192_DIV_CONSTANT2 = (byte) 0x12;
+
+    /**
      * Create diversification process
      *
      * @param standard Standard to use
@@ -54,7 +69,9 @@ public class DiversificationStandard extends AbstractDiversification {
     protected byte[] diversify(byte[] key, byte[] div) throws DiversificationException {
         switch (standard) {
             case AN10922_AES128:
-                return diversifyAN10922(key, div);
+                return diversifyAN10922AES128(key, div);
+            case AN10922_AES192:
+                return diversifyAN10922AES192(key, div);
             case AN0148_3DES:
             case AN0148_DES:
             case AN0148_AES:
@@ -72,11 +89,83 @@ public class DiversificationStandard extends AbstractDiversification {
      * @return Diversified key
      * @throws DiversificationException
      */
+    protected byte[] diversifyAN10922AES128(byte[] key, byte[] div) throws DiversificationException {
+        try {
+
+            log.info("===== AN10922 DIVERSIFICATION ======");
+            log.info("ALGO: {}", algorithm.toString());
+            log.info("K: {}", BytesUtils.bytesToHex(key));
+            byte[] divKey = diversifyAN10922(key, div);
+            log.info("K': {}", BytesUtils.bytesToHex(divKey));
+            log.info("====================================");
+
+            return divKey;
+
+        } catch (Exception e) {
+            throw new DiversificationException("Cannot diversify key (AN10922)", e);
+        }
+    }
+
+
+    /**
+     * Diversify a key with div sequence (AN10922 mode) AES 192 bits
+     *
+     * @param key Key to diversify
+     * @param div Diversification sequences (D1 || D2)
+     * @return Diversified key
+     * @throws DiversificationException
+     */
+    protected byte[] diversifyAN10922AES192(byte[] key, byte[] div) throws DiversificationException {
+        try {
+
+            if (Algorithm.AES192.equals(algorithm) && 192 > Cipher.getMaxAllowedKeyLength(algorithm.getKeyAlgorithm())) {
+                throw new DiversificationException("AES 192 is not available");
+            }
+
+            byte[] divKey;
+            byte[] d1 = Arrays.copyOfRange(div, 0, div.length / 2);
+            byte[] d2 = Arrays.copyOfRange(div, div.length / 2, div.length);
+
+            log.info("===== AN10922 DIVERSIFICATION ======");
+            log.info("ALGO: {}", algorithm.toString());
+            log.info("K: {}", BytesUtils.bytesToHex(key));
+
+            log.info("--- D1 ---");
+            byte[] divKey1 = diversifyAN10922(key, d1);
+            log.info("Ka': {}", BytesUtils.bytesToHex(divKey1));
+            log.info("--- D2 ---");
+            byte[] divKey2 = diversifyAN10922(key, d2);
+            log.info("Kb': {}", BytesUtils.bytesToHex(divKey2));
+            log.info("----------");
+
+            divKey = Bytes.concat(
+                    Arrays.copyOfRange(divKey1, 0, 8),
+                    BytesUtils.xor(Arrays.copyOfRange(divKey1, 8, 16), Arrays.copyOfRange(divKey2, 0, 8)),
+                    Arrays.copyOfRange(divKey2, 8, 16));
+
+            log.info("K': {}", BytesUtils.bytesToHex(divKey));
+            log.info("====================================");
+
+            return divKey;
+
+        } catch (Exception e) {
+            throw new DiversificationException("Cannot diversify key (AN10922)", e);
+        }
+    }
+
+    /**
+     * Diversify a key with div sequence (AN10922 mode)
+     *
+     * @param key Key to diversify
+     * @param div Diversification sequence
+     * @return Diversified key
+     * @throws DiversificationException
+     */
     protected byte[] diversifyAN10922(byte[] key, byte[] div) throws DiversificationException {
         try {
 
-            SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[key.length]));
+            SecretKeySpec secretKey = new SecretKeySpec(key, algorithm.getKeyAlgorithm());
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[algorithm.getBlocSize()]));
 
             byte[] finalDiv = div;
             boolean padded = false;
@@ -87,7 +176,7 @@ public class DiversificationStandard extends AbstractDiversification {
 
             // Generate SubKeys
             // Let L = CIPHK(0b)
-            byte[] lKey = cipher.doFinal(new byte[key.length]);
+            byte[] lKey = cipher.doFinal(new byte[algorithm.getBlocSize()]);
             byte[] subKey1 = generateSubKey(lKey);
             byte[] subKey2 = generateSubKey(subKey1);
 
@@ -97,14 +186,10 @@ public class DiversificationStandard extends AbstractDiversification {
             // Last 16-byte block. (CMAC)
             byte[] divKey = Arrays.copyOfRange(cmac, 16, 32);
 
-            log.info("===== AN10922 DIVERSIFICATION ======");
-            log.info("K: {}", BytesUtils.bytesToHex(key));
             log.info("K0: {}", BytesUtils.bytesToHex(lKey));
             log.info("K1: {}", BytesUtils.bytesToHex(subKey1));
             log.info("K2: {}", BytesUtils.bytesToHex(subKey2));
             log.info("M: {}", BytesUtils.bytesToHex(div));
-            log.info("K': {}", BytesUtils.bytesToHex(divKey));
-            log.info("====================================");
 
             return divKey;
 
@@ -160,8 +245,8 @@ public class DiversificationStandard extends AbstractDiversification {
 
 
             log.info("====== AN0148 DIVERSIFICATION ======");
-            log.info("K: {}", BytesUtils.bytesToHex(key));
             log.info("ALGO: {}", algorithm.toString());
+            log.info("K: {}", BytesUtils.bytesToHex(key));
             log.info("M: {}", BytesUtils.bytesToHex(div));
             log.info("K': {}", BytesUtils.bytesToHex(divKey));
             log.info("====================================");
@@ -228,7 +313,11 @@ public class DiversificationStandard extends AbstractDiversification {
      */
     protected byte[] getDivSequence(int keyIndex, byte[] csn, byte[] aid, byte[] sysId) {
         if (standard.equals(Standard.AN10922_AES128)) {
-            return Bytes.concat(new byte[]{(byte) 0x01}, csn, BytesUtils.reverseBytes(aid), sysId);
+            return Bytes.concat(new byte[]{AES128_DIV_CONSTANT}, csn, BytesUtils.reverseBytes(aid), sysId);
+        } else if (standard.equals(Standard.AN10922_AES192)) {
+            byte[] divSequence1 = Bytes.concat(new byte[]{AES192_DIV_CONSTANT1}, csn, BytesUtils.reverseBytes(aid), sysId);
+            byte[] divSequence2 = Bytes.concat(new byte[]{AES192_DIV_CONSTANT2}, csn, BytesUtils.reverseBytes(aid), sysId);
+            return Bytes.concat(divSequence1, divSequence2);
         } else if (standard.equals(Standard.AN0148_AES)) {
             byte[] divSequence = BytesUtils.pad(Bytes.concat(new byte[]{(byte) keyIndex}, csn), 8);
             return Bytes.concat(divSequence, divSequence);

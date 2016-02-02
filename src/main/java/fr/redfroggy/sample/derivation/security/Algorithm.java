@@ -10,6 +10,7 @@ public enum Algorithm {
     TDES("DESede/CBC/NoPadding", "DESede", 8),
     TKTDES("DESede/CBC/NoPadding", "DESede", 8),
     AES("AES/CBC/NoPadding", "AES", 16),
+    AES192("AES/CBC/NoPadding", "AES", 16),
     RSA("RSA", "RSA", 0);
 
     @Getter
