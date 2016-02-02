@@ -39,7 +39,8 @@ public class Application {
 
             System.out.println("Diversified key: " + BytesUtils.bytesToHex(divK));
         } catch (DiversificationException e) {
-            e.printStackTrace();
+            System.out.println("Diversification error : " + e.getMessage());
+            log.error("Diversification error", e);
         }
     }
 
