@@ -10,7 +10,7 @@ Two standards are implemented: AN0148 and AN10922.
     mvn exec:java
 
 ## Options:
- - standard = AN10922_AES128 | AN0148_DES | AN0148_3DES | AN0148_AES
+ - standard = AN10922_AES128 | AN10922_AES192 | AN0148_DES | AN0148_3DES | AN0148_AES
  - uid = Card ID (7 bytes)
  - aid = Application ID (3 bytes)
  - key = Key value (8 to 16 bytes)
@@ -20,6 +20,8 @@ Two standards are implemented: AN0148 and AN10922.
 Examples :
 
     mvn exec:java -Dstandard=AN10922_AES128 -Duid=04112233445566 -Daid=F5865D -Dkey=00112233445566778899AABBCCDDEEFF -DsystemIdentifier=010203040506070809
+    
+    mvn exec:java -Dstandard=AN10922_AES192 -Duid=04112233445566 -Daid=F5865D -Dkey=00112233445566778899AABBCCDDEEFF0102030405060708 -DsystemIdentifier=010203040506070809
 
     mvn exec:java -Dstandard=AN0148_DES -Duid=04112233445566 -Dkey=0011223344556677 -DkeyIndex=1
     
@@ -32,6 +34,7 @@ Examples :
 With AN10922 Standard:
 
     ===== AN10922 DIVERSIFICATION ======
+    ALGO: AES128
     K: 00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF
     K0: FD E4 FB AE 4A 09 E0 20 EF F7 22 96 9F 83 83 2B
     K1: FB C9 F7 5C 94 13 C0 41 DF EE 45 2D 3F 07 06 D1
@@ -52,8 +55,8 @@ With AN10922 Standard:
 With AN0148 Standard:
 
     ====== AN0148 DIVERSIFICATION ======
-    K: 00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF
     ALGO: AES
+    K: 00 11 22 33 44 55 66 77 88 99 AA BB CC DD EE FF
     M: 01 04 11 22 33 44 55 66 01 04 11 22 33 44 55 66
     K': B9 B6 1B 27 99 75 03 C8 C5 20 3E ED 28 1D 8C 0B
     ====================================
