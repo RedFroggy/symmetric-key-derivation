@@ -97,14 +97,14 @@ public class DiversificationStandard extends AbstractDiversification {
             // Last 16-byte block. (CMAC)
             byte[] divKey = Arrays.copyOfRange(cmac, 16, 32);
 
-            log.debug("===== AN10922 DIVERSIFICATION ======");
-            log.debug("K: {}", BytesUtils.bytesToHex(key));
-            log.debug("K0: {}", BytesUtils.bytesToHex(lKey));
-            log.debug("K1: {}", BytesUtils.bytesToHex(subKey1));
-            log.debug("K2: {}", BytesUtils.bytesToHex(subKey2));
-            log.debug("M: {}", BytesUtils.bytesToHex(div));
-            log.debug("K': {}", BytesUtils.bytesToHex(divKey));
-            log.debug("====================================");
+            log.info("===== AN10922 DIVERSIFICATION ======");
+            log.info("K: {}", BytesUtils.bytesToHex(key));
+            log.info("K0: {}", BytesUtils.bytesToHex(lKey));
+            log.info("K1: {}", BytesUtils.bytesToHex(subKey1));
+            log.info("K2: {}", BytesUtils.bytesToHex(subKey2));
+            log.info("M: {}", BytesUtils.bytesToHex(div));
+            log.info("K': {}", BytesUtils.bytesToHex(divKey));
+            log.info("====================================");
 
             return divKey;
 
@@ -159,12 +159,12 @@ public class DiversificationStandard extends AbstractDiversification {
             byte[] divKey = Arrays.copyOf(tmpKey, keySize);
 
 
-            log.debug("====== AN0148 DIVERSIFICATION ======");
-            log.debug("K: {}", BytesUtils.bytesToHex(key));
-            log.debug("ALGO: {}", algorithm.toString());
-            log.debug("M: {}", BytesUtils.bytesToHex(div));
-            log.debug("K': {}", BytesUtils.bytesToHex(divKey));
-            log.debug("====================================");
+            log.info("====== AN0148 DIVERSIFICATION ======");
+            log.info("K: {}", BytesUtils.bytesToHex(key));
+            log.info("ALGO: {}", algorithm.toString());
+            log.info("M: {}", BytesUtils.bytesToHex(div));
+            log.info("K': {}", BytesUtils.bytesToHex(divKey));
+            log.info("====================================");
 
             return divKey;
 
