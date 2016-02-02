@@ -4,7 +4,7 @@ SYMMETRIC KEY DERIVATION
 # Presentation
 This prototype is used to demonstrate the symmetric key derivation process.
 
-Two standard are implemented, AN0148 and AN10922.
+Two standards are implemented: AN0148 and AN10922.
 
 # Run
     mvn exec:java
@@ -48,6 +48,7 @@ With AN10922 Standard:
   - M: Diversification seed
   - K': Diversified key
 
+
 With AN0148 Standard:
 
     ====== AN0148 DIVERSIFICATION ======
@@ -61,8 +62,7 @@ With AN0148 Standard:
   - K: Original key value
   - M: Diversification seed
   - K': Diversified key
-  
-  
+
 
 # CI
 Develop: [![Build Status](https://api.travis-ci.org/RedFroggy/symmetric-key-derivation.svg?branch=develop)](https://travis-ci.org/RedFroggy/symmetric-key-derivation)
