@@ -48,7 +48,7 @@ public class BytesUtilsTest {
 
     @Test
     public void xor() {
-        byte[] expected = new byte[] { (byte) 0x10, (byte) 0x11, (byte) 0x12, (byte) 0x4d };
+        byte[] expected = new byte[] { (byte) 0x02, (byte) 0x5c, (byte) 0x02, (byte) 0x5c };
         byte[] data1 = new byte[] { (byte) 0x10, (byte) 0x11, (byte) 0x12, (byte) 0x4d };
         byte[] data2 = new byte[] { (byte) 0x12, (byte) 0x4d, (byte) 0x10, (byte) 0x11 };
         byte[] res = BytesUtils.xor(data1, data2);
